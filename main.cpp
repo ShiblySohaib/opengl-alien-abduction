@@ -30,6 +30,9 @@ float flowerDir = 1;
 float flowerBottom = flowerx;
 float grassStart = flowerx;
 float grassStart2 = grassStart+100;
+//cloud
+float cloudx=0, cloudy = 720;
+
 
 
 
@@ -51,7 +54,7 @@ void circle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
     glBegin(GL_TRIANGLE_FAN);
     glVertex2i(cx,cy);
     int division = 1;
-    for(int i=0 ; i<=60 ; i++){
+    for(int i=0 ; i<=50 ; i++){
         float angle = 2*3.14 *i/50;
         float x=rx*cosf(angle);
         float y=ry*sinf(angle);
@@ -59,6 +62,21 @@ void circle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
     }
     glEnd();
 }
+
+void halfCircle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
+
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2i(cx,cy);
+    int division = 1;
+    for(int i=0 ; i<=25 ; i++){
+        float angle = 2*3.14 *i/50;
+        float x=rx*cosf(angle);
+        float y=ry*sinf(angle);
+        glVertex2f(x+cx,y+cy);
+    }
+    glEnd();
+}
+
 
 
 void drawHorizonLine() {
@@ -126,8 +144,13 @@ void blinkStars(int value) {
 
 
 void drawMoon(){
+    for (int i=0;i<=50;i++){
+        float p = i/100.0;
+        glColor3f(1*p, 1*p, 1*p);
+        circle(35+50-i,35+50-i,1450,750);
+    }
     glColor3f( 1,1,1);
-    circle (30,30,1450,750);
+    circle (35,35,1450,750);
 }
 
 void drawHill(GLfloat rx, GLfloat ry, GLfloat cx){
@@ -670,27 +693,27 @@ void drawFlowers(){
 void moveFlowers(int value){
     if(flowerRight){
         flowerDir = -1;
-        flowerx += 0.1;
+        flowerx += 0.05;
         if(flowerx>=1400){
-            flowery-=0.02;
+            flowery-=0.01;
         }
         else{
-            flowery+=0.02;
+            flowery+=0.01;
         }
-        if(flowerx >= 1405){
+        if(flowerx >= 1402){
             flowerRight = false;
         }
     }
     else{
-        flowerx -= 0.1;
+        flowerx -= 0.05;
         flowerDir = 1;
         if(flowerx>=1400){
-            flowery+=0.02;
+            flowery+=0.01;
         }
         else{
-            flowery-=0.02;
+            flowery-=0.01;
         }
-        if(flowerx <= 1395){
+        if(flowerx <= 1398){
             flowerRight = true;
         }
     }
@@ -698,8 +721,51 @@ void moveFlowers(int value){
     glutTimerFunc(10, moveFlowers, 0);
 }
 
+void drawCloud(float x) {
+    glColor4f(0.078f, 0.12f, 0.150f, 0.97);
+    halfCircle(150, 10, x+150, cloudy);
+    halfCircle(30, 10, x+50, cloudy);
+    halfCircle(40, 20, x+80, cloudy);
+    halfCircle(40, 30, x+130, cloudy);
+    halfCircle(50, 50, x+180, cloudy);
+    halfCircle(50, 35, x+220, cloudy);
+    halfCircle(30, 10, x+270, cloudy);
 
+    halfCircle(200, 20, x+550, cloudy);
+    halfCircle(20, 10, x+400, cloudy);
+    halfCircle(40, 20, x+450, cloudy);
+    halfCircle(50, 40, x+500, cloudy);
+    halfCircle(70, 50, x+570, cloudy);
+    halfCircle(50, 40, x+640, cloudy);
+    halfCircle(40, 20, x+680, cloudy);
+}
 
+void drawCloudSet1() {
+    drawCloud(cloudx);
+    drawCloud(cloudx+800);
+}
+void drawCloudSet2() {
+    float cloudx2;
+    if(cloudx<0) cloudx2 = cloudx+1600;
+    else cloudx2 = cloudx-1600;
+
+    drawCloud(cloudx2);
+    drawCloud(cloudx2+800);
+}
+
+void moveCloud(int value) {
+    cloudx -= 2.0;
+    if (cloudx < -1600) {
+        cloudx = 1600;
+    }
+    glutPostRedisplay();
+    glutTimerFunc(30, moveCloud, 0);
+}
+
+void drawAllClouds(){
+    drawCloudSet1();
+    drawCloudSet2();
+}
 
 void Draw() {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -718,6 +784,7 @@ void Draw() {
     drawWindow();
     drawLightBulb();
     drawFlowers();
+    drawAllClouds();
     //drawing now-------------------------------------------------------------------------------------------------
 
 
@@ -727,7 +794,7 @@ void Draw() {
 
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //graph(100);
+    graph(100);
     glutSwapBuffers();
 }
 
@@ -743,6 +810,7 @@ int main(int argc, char** argv) {
     glutTimerFunc(0, moveSheep1, 0);
     glutTimerFunc(0, moveSheep2, 0);
     glutTimerFunc(0, moveFlowers, 0);
+    glutTimerFunc(30, moveCloud, 0);
     glutMainLoop();
     return 0;
 }
