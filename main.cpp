@@ -808,7 +808,7 @@ int main(int argc, char** argv) {
     glutTimerFunc(0, moveSheep1, 0);
     glutTimerFunc(0, moveSheep2, 0);
     glutTimerFunc(0, moveFlowers, 0);
-    glutTimerFunc(30, moveCloud, 0);
+    glutTimerFunc(0, moveCloud, 0);
     glutMainLoop();
     return 0;
 }
