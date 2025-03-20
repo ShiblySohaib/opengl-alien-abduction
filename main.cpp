@@ -23,7 +23,13 @@ float sheep1x = 100;
 bool sheep2Right = false;
 int sheep2Dir = 1, sheep2Pause = 0;
 float sheep2x = 250;
-
+//flowers
+bool flowerRight = false;
+float flowerx = 1400, flowery = 40;
+float flowerDir = 1;
+float flowerBottom = flowerx;
+float grassStart = flowerx;
+float grassStart2 = grassStart+100;
 
 
 
@@ -573,6 +579,128 @@ void drawLightBulb(){
 
 
 
+void drawFlowers(){
+    //flower set1
+    //flower1
+    glLineWidth(2);
+    glColor3f(0,0.3,0);
+    glBegin(GL_LINES);
+    glVertex2f(flowerx, flowery);
+    glVertex2f(flowerBottom, flowery-40);
+    glEnd();
+    glColor3f(0.2, 0.1, 0.1);
+    circle(5, 5, flowerx, flowery);
+    glColor3f(1,1,0);
+    circle(5, 5, flowerx+10, flowery);
+    circle(5, 5, flowerx-10, flowery);
+    circle(5, 5, flowerx, flowery+10);
+    circle(5, 5, flowerx, flowery-10);
+    //flower2
+    glColor3f(0,0.3,0);
+    glBegin(GL_LINES);
+    glVertex2f(flowerx+30, flowery+20);
+    glVertex2f(flowerBottom+30,flowery-40);
+    glEnd();
+    glColor3f(0.2, 0.1, 0.1);
+    circle(5, 5, flowerx+30, flowery+20);
+    glColor3f(1,1,0);
+    circle(5, 5, flowerx+40, flowery+20);
+    circle(5, 5, flowerx+20, flowery+20);
+    circle(5, 5, flowerx+30, flowery+30);
+    circle(5, 5, flowerx+30, flowery+10);
+
+
+
+    float flowerx2 = flowerx + 100;
+    float flowerBottom2 = flowerBottom +100;
+    //set2
+    glLineWidth(2);
+    glColor3f(0,0.3,0);
+    glBegin(GL_LINES);
+    glVertex2f(flowerx2, flowery);
+    glVertex2f(flowerBottom2, flowery-40);
+    glEnd();
+    glColor3f(0.2, 0.1, 0.1);
+    circle(5, 5, flowerx2, flowery);
+    glColor3f(1,1,0);
+    circle(5, 5, flowerx2+10, flowery);
+    circle(5, 5, flowerx2-10, flowery);
+    circle(5, 5, flowerx2, flowery+10);
+    circle(5, 5, flowerx2, flowery-10);
+    //flower2
+    glColor3f(0,0.3,0);
+    glBegin(GL_LINES);
+    glVertex2f(flowerx2+30, flowery+20);
+    glVertex2f(flowerBottom2+30,flowery-40);
+    glEnd();
+    glColor3f(0.2, 0.1, 0.1);
+    circle(5, 5, flowerx2+30, flowery+20);
+    glColor3f(1,1,0);
+    circle(5, 5, flowerx2+40, flowery+20);
+    circle(5, 5, flowerx2+20, flowery+20);
+    circle(5, 5, flowerx2+30, flowery+30);
+    circle(5, 5, flowerx2+30, flowery+10);
+
+
+    //flowergrass
+    glColor3f(0,0.3,0);
+    glBegin(GL_POLYGON);
+    glVertex2f(grassStart, 0);
+    glVertex2f(grassStart+30, 0);
+    glVertex2f(grassStart+50, 20);
+    glVertex2f(grassStart+20, 10);
+    glVertex2f(grassStart+15, 20);
+    glVertex2f(grassStart+10, 10);
+    glVertex2f(grassStart-20, 20);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glVertex2f(grassStart2, 0);
+    glVertex2f(grassStart2+30, 0);
+    glVertex2f(grassStart2+50, 20);
+    glVertex2f(grassStart2+20, 10);
+    glVertex2f(grassStart2+15, 20);
+    glVertex2f(grassStart2+10, 10);
+    glVertex2f(grassStart2-20, 20);
+    glEnd();
+}
+
+
+
+void moveFlowers(int value){
+    if(flowerRight){
+        flowerDir = -1;
+        flowerx += 0.1;
+        if(flowerx>=1400){
+            flowery-=0.02;
+        }
+        else{
+            flowery+=0.02;
+        }
+        if(flowerx >= 1405){
+            flowerRight = false;
+        }
+    }
+    else{
+        flowerx -= 0.1;
+        flowerDir = 1;
+        if(flowerx>=1400){
+            flowery+=0.02;
+        }
+        else{
+            flowery-=0.02;
+        }
+        if(flowerx <= 1395){
+            flowerRight = true;
+        }
+    }
+    glutPostRedisplay();
+    glutTimerFunc(10, moveFlowers, 0);
+}
+
+
+
+
 void Draw() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -589,14 +717,17 @@ void Draw() {
     drawDoor();
     drawWindow();
     drawLightBulb();
+    drawFlowers();
     //drawing now-------------------------------------------------------------------------------------------------
 
 
 
 
 
+
+
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    graph(100);
+    //graph(100);
     glutSwapBuffers();
 }
 
@@ -611,6 +742,7 @@ int main(int argc, char** argv) {
     glutTimerFunc(0, blinkStars, 0);
     glutTimerFunc(0, moveSheep1, 0);
     glutTimerFunc(0, moveSheep2, 0);
+    glutTimerFunc(0, moveFlowers, 0);
     glutMainLoop();
     return 0;
 }
