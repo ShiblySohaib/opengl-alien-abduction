@@ -54,7 +54,7 @@ void circle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
     glBegin(GL_TRIANGLE_FAN);
     glVertex2i(cx,cy);
     int division = 1;
-    for(int i=0 ; i<=50 ; i++){
+    for(int i=0 ; i<=60 ; i++){
         float angle = 2*3.14 *i/50;
         float x=rx*cosf(angle);
         float y=ry*sinf(angle);
@@ -589,9 +589,7 @@ void drawLightBulb(){
     glEnd();
     glBegin(GL_TRIANGLE_FAN);
     glVertex2i(1240,170);
-    int division = 1;
-    for(int i=0 ; i<=50 ; i++){
-        if(i<25) continue;
+    for(int i=25 ; i<=50 ; i++){
         float angle = 2*3.14 *i/50;
         float x=155*cosf(angle);
         float y=30*sinf(angle);
