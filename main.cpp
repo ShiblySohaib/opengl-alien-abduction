@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include <cmath>
 #include <stdio.h>
+#include <utility>
 
 
 #define HORIZON_DISTANCE 400
@@ -32,12 +33,33 @@ float grassStart = flowerx;
 float grassStart2 = grassStart+100;
 //cloud
 float cloudx=0, cloudy = 720;
+//UFO
+float ufoSize = 12;
+float ufoPosx = 1600;
+float ufoPosy = 780;
+float ufoLightHeight=0;
+bool ufoLightFlag = 1;
+bool ufoLeft = false;
+// Target sheep
+float TargetSheepSize = 5;
+float TargetSheepy = 100;
+//functions
+void moveUFO(int value);
+void moveUFO1 (int value);
+void moveUFO2 (int value);
+void moveUFO3 (int value);
+void drawUFOLight(int value);
+void drawUFOLight1(int value);
+void drawUFOLight2(int value);
+void abductSheep (int value);
+//car
+float carX = -160;
+float carY = 350;
+float red1x1 = 70, red1x2 = 78;
+float blue1x1 = 86, blue1x2 = 78;
 
-
-
-
-
-void init(void) {
+void init(void)
+{
     glClearColor(0,0,0,1);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -49,12 +71,14 @@ void init(void) {
 
 
 
-void circle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
+void circle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy)
+{
 
     glBegin(GL_TRIANGLE_FAN);
     glVertex2i(cx,cy);
     int division = 1;
-    for(int i=0 ; i<=60 ; i++){
+    for(int i=0 ; i<=60 ; i++)
+    {
         float angle = 2*3.14 *i/50;
         float x=rx*cosf(angle);
         float y=ry*sinf(angle);
@@ -63,12 +87,13 @@ void circle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
     glEnd();
 }
 
-void halfCircle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
+void halfCircle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy)
+{
 
     glBegin(GL_TRIANGLE_FAN);
     glVertex2i(cx,cy);
-    int division = 1;
-    for(int i=0 ; i<=25 ; i++){
+    for(int i=0 ; i<=25 ; i++)
+    {
         float angle = 2*3.14 *i/50;
         float x=rx*cosf(angle);
         float y=ry*sinf(angle);
@@ -77,15 +102,21 @@ void halfCircle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
     glEnd();
 }
 
+void inverseHalfCircle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy)
+{
 
-
-void drawHorizonLine() {
-    glColor3f(0.3, 0.2, 0.1); //brown line
-    glBegin(GL_LINES);
-    glVertex2i(0, HORIZON_DISTANCE);
-    glVertex2i(1600, HORIZON_DISTANCE);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(cx,cy);
+    for(int i=70 ; i<=80 ; i++)
+    {
+        float angle = 2*3.14 *i/100;
+        float x=rx*cosf(angle);
+        float y=ry*sinf(angle);
+        glVertex2f(x+cx,y+cy);
+    }
     glEnd();
 }
+
 
 
 void drawStars(float centerX, float centerY, float size, bool status)
@@ -113,7 +144,8 @@ void drawStars(float centerX, float centerY, float size, bool status)
 }
 
 
-void drawAllStars(){
+void drawAllStars()
+{
     drawStars(100, starBorderY + 100, starSize, starStatus); // 1
     drawStars(150, starBorderY + 90, starSize, starStatus); // 2
     drawStars(220, starBorderY + 80, starSize, !starStatus); // 3
@@ -136,15 +168,18 @@ void drawAllStars(){
     drawStars(400, starBorderY + 40, starSize - 2, starStatus); // 20
 }
 
-void blinkStars(int value) {
+void blinkStars(int value)
+{
     starStatus = !starStatus;
     glutPostRedisplay();
     glutTimerFunc(1000, blinkStars, 0);
 }
 
 
-void drawMoon(){
-    for (int i=0;i<=50;i++){
+void drawMoon()
+{
+    for (int i=0; i<=50; i++)
+    {
         float p = i/100.0;
         glColor3f(1*p, 1*p, 1*p);
         circle(35+50-i,35+50-i,1450,750);
@@ -153,13 +188,14 @@ void drawMoon(){
     circle (35,35,1450,750);
 }
 
-void drawHill(GLfloat rx, GLfloat ry, GLfloat cx){
+void drawHill(GLfloat rx, GLfloat ry, GLfloat cx)
+{
     float cy = HORIZON_DISTANCE;
     glColor3f(0.4, 0.2, 0.0); //brown
     glBegin(GL_TRIANGLE_FAN);
     glVertex2i(cx,cy);
-    int division = 1;
-    for(int i=0 ; i<=25 ; i++){
+    for(int i=0 ; i<=25 ; i++)
+    {
         float angle = 2*3.14 *i/50;
         float x=rx*cosf(angle);
         float y=ry*sinf(angle);
@@ -169,7 +205,8 @@ void drawHill(GLfloat rx, GLfloat ry, GLfloat cx){
 }
 
 
-void drawAllHills(){
+void drawAllHills()
+{
     drawHill(90, 130, 90);
     drawHill(70, 90, 230);
     drawHill(70, 70, 360);
@@ -185,7 +222,8 @@ void drawAllHills(){
 }
 
 
-void drawTree(float x) {
+void drawTree(float x)
+{
     float y = HORIZON_DISTANCE;
 
     // Draw trunk
@@ -206,7 +244,8 @@ void drawTree(float x) {
     glEnd();
 }
 
-void drawAllTrees(){
+void drawAllTrees()
+{
     drawTree(50);
     drawTree(300);
     drawTree(430);
@@ -218,35 +257,40 @@ void drawAllTrees(){
 }
 
 
-void drawField(){
+void drawField()
+{
     glBegin(GL_QUADS);
-        glColor3f(0.1f, 0.5f, 0.1f); // Dark green (bottom)
-        glVertex2f(0, 0);
-        glVertex2f(1600, 0);
+    glColor3f(0.1f, 0.5f, 0.1f); // Dark green (bottom)
+    glVertex2f(0, 0);
+    glVertex2f(1600, 0);
 
-        glColor3f(0.6f, 0.6f, 0.3f); // Light green (top near horizon)
-        glVertex2f(1600, HORIZON_DISTANCE);
-        glVertex2f(0, HORIZON_DISTANCE);
+    glColor3f(0.6f, 0.6f, 0.3f); // Light green (top near horizon)
+    glVertex2f(1600, HORIZON_DISTANCE);
+    glVertex2f(0, HORIZON_DISTANCE);
     glEnd();
 }
 
 
-void drawFencePillar(float x, float y){
+void drawFencePillar(float x, float y)
+{
     glLineWidth(3);
     glColor3f(0.6, 0.5, 0.0);
     glBegin(GL_LINES);
-        glVertex2f(x, y);
-        glVertex2f(x, y+30);
+    glVertex2f(x, y);
+    glVertex2f(x, y+30);
     glEnd();
 }
 
 
-void drawFence(){
+void drawFence()
+{
     //fence pillars
-    for(int i=0;i<=900;i+=10){
+    for(int i=0; i<=900; i+=10)
+    {
         drawFencePillar(i,300);
     }
-    for(float i=0,j=700;i<=300;i+=10){
+    for(float i=0,j=700; i<=300; i+=10)
+    {
         j+=(200/30.0);
         drawFencePillar(j, i);
     }
@@ -255,45 +299,51 @@ void drawFence(){
     glLineWidth(3);
     glColor3f(0.6, 0.5, 0.0);
     glBegin(GL_LINES);
-        glVertex2f(0, 310);
-        glVertex2f(910, 310);
+    glVertex2f(0, 310);
+    glVertex2f(910, 310);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(0, 320);
-        glVertex2f(910, 320);
+    glVertex2f(0, 320);
+    glVertex2f(910, 320);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(700, 0);
-        glVertex2f(910, 310);
+    glVertex2f(700, 0);
+    glVertex2f(910, 310);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(700, 10);
-        glVertex2f(910, 320);
+    glVertex2f(700, 10);
+    glVertex2f(910, 320);
     glEnd();
 }
 
 
-void drawGrass(float x, float y){
+void drawGrass(float x, float y)
+{
     glLineWidth(3);
     glColor3f(0.0, 0.3, 0.0);
     glBegin(GL_LINES);
-        glVertex2f(x, y);
-        glVertex2f(x, y+=10);
+    glVertex2f(x, y);
+    glVertex2f(x, y+=10);
     glEnd();
 }
 
 
-void drawAllGrass(){
+void drawAllGrass()
+{
     float grassEnd = 700;
-    for(int j=0;j<=280;j+=60){
-        for(int i=0;i<=grassEnd;i+=60){
+    for(int j=0; j<=280; j+=60)
+    {
+        for(int i=0; i<=grassEnd; i+=60)
+        {
             drawGrass(i,j);
         }
         grassEnd+=35;
     }
     grassEnd = 700;
-    for(int j=30;j<=280;j+=60){
-        for(int i=30;i<=grassEnd;i+=60){
+    for(int j=30; j<=280; j+=60)
+    {
+        for(int i=30; i<=grassEnd; i+=60)
+        {
             drawGrass(i,j);
         }
         grassEnd+=35;
@@ -301,7 +351,8 @@ void drawAllGrass(){
 }
 
 
-void drawSheep(float x, float y, int direction){
+void drawSheep(float x, float y, int direction)
+{
     //direction = 1 (facing left)
     //direction = -1 (facing right)
 
@@ -312,20 +363,20 @@ void drawSheep(float x, float y, int direction){
 
     //legs
     glBegin(GL_LINES);
-        glVertex2f(x-10, y);
-        glVertex2f(x-10, y-25);
+    glVertex2f(x-10, y);
+    glVertex2f(x-10, y-25);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(x-15, y);
-        glVertex2f(x-15, y-25);
+    glVertex2f(x-15, y);
+    glVertex2f(x-15, y-25);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(x+10, y);
-        glVertex2f(x+10, y-25);
+    glVertex2f(x+10, y);
+    glVertex2f(x+10, y-25);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(x+15, y);
-        glVertex2f(x+15, y-25);
+    glVertex2f(x+15, y);
+    glVertex2f(x+15, y-25);
     glEnd();
 
     glColor3f(1,1,1);       //white color
@@ -335,53 +386,60 @@ void drawSheep(float x, float y, int direction){
 }
 
 
-void drawTargetSheep(float x, float y){
+void drawTargetSheep(float x, float y, float size)               //all component respond to size. division by 5
+{
     glColor3f(0,0,0);       //black color
-    circle(10,10,x+33,y-8);   //head
-    circle(30,20,x,y);      //body background
-    circle(5,5,x-32,y+5);   //tail
+    circle(size*2,size*2,x+size*6.6,y-size*1.6);   //head
+    circle(size*6,size*4,x,y);      //body background
+    circle(size,size,x-size*6.4,y+size);   //tail
 
     //legs
     glBegin(GL_LINES);
-        glVertex2f(x-10, y);
-        glVertex2f(x-10, y-25);
+    glVertex2f(x-size*2, y);
+    glVertex2f(x-size*2, y-size*5);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(x-15, y);
-        glVertex2f(x-15, y-25);
+    glVertex2f(x-size*3, y);
+    glVertex2f(x-size*3, y-size*5);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(x+10, y);
-        glVertex2f(x+10, y-25);
+    glVertex2f(x+size*2, y);
+    glVertex2f(x+size*2, y-size*5);
     glEnd();
     glBegin(GL_LINES);
-        glVertex2f(x+15, y);
-        glVertex2f(x+15, y-25);
+    glVertex2f(x+size*3, y);
+    glVertex2f(x+size*3, y-size*5);
     glEnd();
 
     glColor3f(1,1,1);       //white color
-    circle(28,18,x,y);      //body
-    circle(2,2,x+37,y-12);   //eye
+    circle(5.6*size,3.6*size,x,y);      //body
+    circle(0.4*size,0.4*size,x+7.4*size,y-2.4*size);   //eye
 }
 
 
 
-void moveSheep1(int value){
-    if(sheep1Pause>0){
+void moveSheep1(int value)
+{
+    if(sheep1Pause>0)
+    {
         sheep1Pause-=10;
     }
-    else if(sheep1Right){
+    else if(sheep1Right)
+    {
         sheep1Dir = -1;
         sheep1x += 0.7;
-        if(sheep1x >= 300){
+        if(sheep1x >= 300)
+        {
             sheep1Right = false;
             sheep1Pause = 1000;
         }
     }
-    else{
+    else
+    {
         sheep1x -= 0.7;
         sheep1Dir = 1;
-        if(sheep1x <= 100){
+        if(sheep1x <= 100)
+        {
             sheep1Right = true;
             sheep1Pause = 1000;
         }
@@ -391,22 +449,28 @@ void moveSheep1(int value){
 }
 
 
-void moveSheep2(int value){
-    if(sheep2Pause>0){
+void moveSheep2(int value)
+{
+    if(sheep2Pause>0)
+    {
         sheep2Pause-=10;
     }
-    else if(sheep2Right){
+    else if(sheep2Right)
+    {
         sheep2Dir = -1;
         sheep2x += 0.5;
-        if(sheep2x >= 250){
+        if(sheep2x >= 250)
+        {
             sheep2Right = false;
             sheep2Pause = 1000;
         }
     }
-    else{
+    else
+    {
         sheep2x -= 0.5;
         sheep2Dir = 1;
-        if(sheep2x <= 150){
+        if(sheep2x <= 150)
+        {
             sheep2Right = true;
             sheep2Pause = 1000;
         }
@@ -416,17 +480,20 @@ void moveSheep2(int value){
 }
 
 
-void drawAllSheeps(){
+void drawAllSheeps()
+{
     drawSheep(sheep1x,100,sheep1Dir);
     drawSheep(sheep2x,150,sheep2Dir);
-    drawTargetSheep(500,100);
+    drawTargetSheep(500,TargetSheepy,TargetSheepSize);
 }
 
 
-void graph(int n){
-        //graph
+void graph(int n)
+{
+    //graph
     glColor3f(1,0,0);
-    for(int i=0;i<=900;i+=n){
+    for(int i=0; i<=900; i+=n)
+    {
         glBegin(GL_LINES);
         glVertex2f(0,i);
         glVertex2f(20,i);
@@ -436,7 +503,8 @@ void graph(int n){
         glVertex2f(1580,i);
         glEnd();
     }
-    for(int i=0;i<=1600;i+=n){
+    for(int i=0; i<=1600; i+=n)
+    {
         glBegin(GL_LINES);
         glVertex2f(i,900);
         glVertex2f(i,880);
@@ -449,7 +517,8 @@ void graph(int n){
 
 }
 
-void drawBarn(){
+void drawBarn()
+{
     //front
     glColor3f(0.671f, 0.208f, 0.141f);
     glBegin(GL_POLYGON);
@@ -491,7 +560,8 @@ void drawBarn(){
 
 
 
-void drawDoor(){
+void drawDoor()
+{
     glBegin(GL_QUADS);
     glColor3f(0.67f, 0.39f, 0.11f);
     glVertex2f(1190, 192);
@@ -527,7 +597,8 @@ void drawDoor(){
 }
 
 
-void drawWindow(){
+void drawWindow()
+{
     glBegin(GL_QUADS);
     glColor3f(0.647f, 0.824f, 1.0f);
     glVertex2f(1205, 421);
@@ -565,7 +636,8 @@ void drawWindow(){
 
 
 
-void drawLightBulb(){
+void drawLightBulb()
+{
     //bulb
     glColor3f(1,1,0);
     circle(8,8,1240,400);
@@ -589,7 +661,8 @@ void drawLightBulb(){
     glEnd();
     glBegin(GL_TRIANGLE_FAN);
     glVertex2i(1240,170);
-    for(int i=25 ; i<=50 ; i++){
+    for(int i=25 ; i<=50 ; i++)
+    {
         float angle = 2*3.14 *i/50;
         float x=155*cosf(angle);
         float y=30*sinf(angle);
@@ -600,7 +673,8 @@ void drawLightBulb(){
 
 
 
-void drawFlowers(){
+void drawFlowers()
+{
     //flower set1
     //flower1
     glLineWidth(2);
@@ -688,30 +762,39 @@ void drawFlowers(){
 
 
 
-void moveFlowers(int value){
-    if(flowerRight){
+void moveFlowers(int value)
+{
+    if(flowerRight)
+    {
         flowerDir = -1;
         flowerx += 0.05;
-        if(flowerx>=1400){
+        if(flowerx>=1400)
+        {
             flowery-=0.01;
         }
-        else{
+        else
+        {
             flowery+=0.01;
         }
-        if(flowerx >= 1402){
+        if(flowerx >= 1402)
+        {
             flowerRight = false;
         }
     }
-    else{
+    else
+    {
         flowerx -= 0.05;
         flowerDir = 1;
-        if(flowerx>=1400){
+        if(flowerx>=1400)
+        {
             flowery+=0.01;
         }
-        else{
+        else
+        {
             flowery-=0.01;
         }
-        if(flowerx <= 1398){
+        if(flowerx <= 1398)
+        {
             flowerRight = true;
         }
     }
@@ -719,7 +802,8 @@ void moveFlowers(int value){
     glutTimerFunc(10, moveFlowers, 0);
 }
 
-void drawCloud(float x) {
+void drawCloud(float x)
+{
     glColor4f(0.078f, 0.12f, 0.150f, 0.97);
     halfCircle(150, 10, x+150, cloudy);
     halfCircle(30, 10, x+50, cloudy);
@@ -738,11 +822,13 @@ void drawCloud(float x) {
     halfCircle(40, 20, x+680, cloudy);
 }
 
-void drawCloudSet1() {
+void drawCloudSet1()
+{
     drawCloud(cloudx);
     drawCloud(cloudx+800);
 }
-void drawCloudSet2() {
+void drawCloudSet2()
+{
     float cloudx2;
     if(cloudx<0) cloudx2 = cloudx+1600;
     else cloudx2 = cloudx-1600;
@@ -751,26 +837,250 @@ void drawCloudSet2() {
     drawCloud(cloudx2+800);
 }
 
-void moveCloud(int value) {
+void moveCloud(int value)
+{
     cloudx -= 2.0;
-    if (cloudx < -1600) {
+    if (cloudx < -1600)
+    {
         cloudx = 1600;
     }
     glutPostRedisplay();
     glutTimerFunc(30, moveCloud, 0);
 }
 
-void drawAllClouds(){
+void drawAllClouds()
+{
     drawCloudSet1();
     drawCloudSet2();
 }
 
-void Draw() {
+
+void moveCar(int value){
+    if(carX<300){
+        carX+=0.05;
+        glutTimerFunc(20, moveCar, 0);
+    }
+}
+
+
+void drawCar(){
+    //lower body
+    glColor3f(0.15,0.15,0.15);
+    glBegin(GL_POLYGON);
+    glVertex2f(carX-150, carY);
+    glVertex2f(carX, carY);
+    glVertex2f(carX, carY+10);
+    glVertex2f(carX-20, carY+20);
+    glVertex2f(carX-130, carY+20);
+    glVertex2f(carX-150, carY+10);
+    glEnd();
+
+
+    //upper body
+    glColor3f(1,1,1);
+    glBegin(GL_POLYGON);
+    glVertex2f(carX-125, carY+20);
+    glVertex2f(carX-30, carY+20);
+    glVertex2f(carX-40, carY+40);
+    glVertex2f(carX-115, carY+40);
+    glEnd();
+
+    //glass
+    glColor3f(0.620f, 0.816f, 0.894f);
+    glBegin(GL_POLYGON);
+    glVertex2f(carX-123, carY+21);
+    glVertex2f(carX-32, carY+21);
+    glVertex2f(carX-40, carY+39);
+    glVertex2f(carX-115, carY+39);
+    glEnd();
+    glColor3f(1,1,1);
+    glLineWidth(2);
+    glBegin(GL_LINES);
+    glVertex2f(carX-78, carY+40);
+    glVertex2f(carX-78, carY+20);
+    glEnd();
+
+
+    //wheels
+    glColor3f(0,0,0);
+    circle(13, 13, carX-120, carY);
+    circle(13, 13, carX-30, carY);
+    glColor3f(0.3,0.3,0.3);
+    circle(5, 5, carX-120, carY);
+    circle(5, 5, carX-30, carY);
+
+    //headlight
+    glColor3f(1,1,0);
+    glBegin(GL_QUADS);
+    glVertex2f(carX-5, carY+5);
+    glVertex2f(carX, carY+5);
+    glVertex2f(carX, carY+10);
+    glVertex2f(carX-5, carY+10);
+    glEnd();
+
+    //rearlight
+    glColor3f(1,0,0);
+    glBegin(GL_QUADS);
+    glVertex2f(carX-150, carY+5);
+    glVertex2f(carX-145, carY+5);
+    glVertex2f(carX-145, carY+10);
+    glVertex2f(carX-150, carY+10);
+    glEnd();
+
+
+    //toplight
+    glLineWidth(5);
+    glColor3f(1,0,0);
+    glBegin(GL_LINES);
+    glVertex2f(carX-red1x1, carY+43);
+    glVertex2f(carX-red1x2, carY+43);
+    glEnd();
+    glColor3f(0,0,1);
+    glBegin(GL_LINES);
+    glVertex2f(carX-blue1x1, carY+43);
+    glVertex2f(carX-blue1x2, carY+43);
+    glEnd();
+
+    moveCar(0);
+}
+
+
+void blinkCarLight(int value){
+    std::swap(red1x1, blue1x1);
+    std::swap(red1x2, blue1x2);
+    glutTimerFunc(300, blinkCarLight, 0);
+}
+
+
+
+
+
+void drawUFO()
+{
+    glColor3f(1,1,1);                           //dome
+    circle((ufoSize*1.5),ufoSize,ufoPosx,ufoPosy);
+    glColor3f(0,0,1);                           //body
+    circle (ufoSize*4,ufoSize,ufoPosx,(ufoPosy-ufoSize));
+    glutPostRedisplay;
+}
+
+
+
+void moveUFO1(int value)
+{
+    if (ufoPosx>1000)
+    {
+        ufoPosx-=2;
+        drawUFO();
+        glutTimerFunc(10, moveUFO1, 0);
+    }
+    else
+    {
+        glutTimerFunc(1000, moveUFO2, 0);
+    }
+}
+
+void moveUFO2 (int value)
+{
+    if (ufoPosx>=500)
+    {
+        ufoPosy =  sqrt(288.8*ufoPosx-144400)+400;                             //288.8x = (y-400)^2 + 144400, check dc
+        ufoSize = -(3*ufoPosy/38)+71.579;                            //goes through (780,10) and (400,40) point
+        drawUFO();
+        glutTimerFunc(5, moveUFO2, 0);
+        ufoPosx-=1;
+    }
+    else
+    {
+        glutPostRedisplay();
+        glutTimerFunc(2500, moveUFO3, 0);
+    }
+}
+
+void moveUFO3 (int value)
+{
+    if(ufoPosy<900)
+    {
+        ufoPosy+=1;
+        ufoSize = -(3*ufoPosy/38)+71.579;
+        drawUFO();
+        glutTimerFunc(5, moveUFO3, 0);
+    }
+    else
+    {
+        ufoPosx = 1700;
+        ufoSize = 0;
+        ufoLeft = true;
+    }
+}
+
+void moveUFO(int value)
+{
+    //float initialPosx = ufoPosx;
+    glutPostRedisplay();
+
+    moveUFO1(0);
+
+}
+void drawUFOLight1(int value)
+{
+
+    glColor4f(1,1,0,0.3);
+    inverseHalfCircle(ufoLightHeight,ufoLightHeight,ufoPosx,(ufoPosy-ufoSize));
+    if (ufoLightHeight==300){
+        ufoLightFlag =0;
+    }
+    if (ufoLightHeight<300 && ufoLightFlag==1)
+    {
+        ufoLightHeight+=0.1;
+        glutTimerFunc(500, drawUFOLight1, 0);
+    }
+    else
+    {
+        glutTimerFunc(500, abductSheep, 0);
+        glutTimerFunc(2000, drawUFOLight2, 0);
+    }
+}
+
+void drawUFOLight2(int value)
+{
+
+    glColor4f(1,1,0,0.3);
+    inverseHalfCircle(ufoLightHeight,ufoLightHeight,ufoPosx,(ufoPosy-ufoSize));
+    if (ufoLightHeight>0 && ufoLightFlag==0)
+    {
+        ufoLightHeight--;
+        glutTimerFunc(800, drawUFOLight2, 0);
+    }
+}
+
+void drawUFOLight(int value)
+{
+    glutPostRedisplay();
+
+    drawUFOLight1(0);
+}
+
+void abductSheep (int value){
+    glutPostRedisplay ();
+    //float TargetSheepy = 100;
+    TargetSheepSize = -(0.0178*TargetSheepy)+6.78;               //goes through (100,5) and (380,0)
+    if (TargetSheepSize>0){
+        drawAllSheeps();
+        TargetSheepy++;
+        glutTimerFunc(500, abductSheep, 0);
+    }
+}
+
+
+
+
+void Draw()
+{
     glClear(GL_COLOR_BUFFER_BIT);
 
     drawAllStars();
     drawMoon();
-    drawHorizonLine();
     drawAllHills();
     drawAllTrees();
     drawField();
@@ -783,20 +1093,16 @@ void Draw() {
     drawLightBulb();
     drawFlowers();
     drawAllClouds();
-    //drawing now-------------------------------------------------------------------------------------------------
+    if (ufoPosx==499 && ufoPosy==400) drawUFOLight(0);
+    drawUFO();
+    if(ufoLeft) drawCar();
 
-
-
-
-
-
-
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     graph(100);
     glutSwapBuffers();
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowPosition(0, 0);
@@ -804,12 +1110,13 @@ int main(int argc, char** argv) {
     glutCreateWindow("Alien Invasion");
     init();
     glutDisplayFunc(Draw);
-    glutTimerFunc(0, blinkStars, 0);
-    glutTimerFunc(0, moveSheep1, 0);
-    glutTimerFunc(0, moveSheep2, 0);
-    glutTimerFunc(0, moveFlowers, 0);
-    glutTimerFunc(0, moveCloud, 0);
+    blinkStars(0);
+    moveSheep1 (0);
+    moveSheep2 (0);
+    moveFlowers (0);
+    moveCloud (0);
+    moveUFO(0);
+    blinkCarLight(0);
     glutMainLoop();
     return 0;
 }
-
