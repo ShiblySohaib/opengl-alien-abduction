@@ -57,6 +57,9 @@ float carX = -160;
 float carY = 350;
 float red1x1 = 70, red1x2 = 78;
 float blue1x1 = 86, blue1x2 = 78;
+//jet
+float jetX = 1600;
+float jetY = 780;
 
 void init(void)
 {
@@ -1067,12 +1070,26 @@ void abductSheep (int value){
     TargetSheepSize = -(0.0178*TargetSheepy)+6.78;               //goes through (100,5) and (380,0)
     if (TargetSheepSize>0){
         drawAllSheeps();
-        TargetSheepy++;
+        TargetSheepy=TargetSheepy+0.2;
         glutTimerFunc(500, abductSheep, 0);
     }
 }
 
-
+void drawJet (){
+    //glutPostRedisplay();
+    glColor3f(0.2, 0.2, 0.2);
+    glBegin(GL_POLYGON);
+    glVertex2f(jetX,jetY);
+    glVertex2f(jetX+75, jetY-25);
+    glVertex2f(jetX+50, jetY-10);
+    glVertex2f(jetX+65, jetY);
+    glVertex2f(jetX+50, jetY+10);
+    glVertex2f(jetX+75, jetY+25);
+    if (jetX>-65){
+        jetX=jetX-2;
+    }
+    glEnd();
+}
 
 
 void Draw()
@@ -1095,9 +1112,11 @@ void Draw()
     drawAllClouds();
     if (ufoPosx==499 && ufoPosy==400) drawUFOLight(0);
     drawUFO();
-    if(ufoLeft) drawCar();
-
-    graph(100);
+    if(ufoLeft) {
+        drawCar();
+        drawJet();
+    }
+    //graph(100);
     glutSwapBuffers();
 }
 
