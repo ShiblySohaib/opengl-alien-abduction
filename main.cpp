@@ -490,35 +490,35 @@ void drawAllSheeps()
     drawTargetSheep(500,TargetSheepy,TargetSheepSize);
 }
 
-
-void graph(int n)
-{
-    //graph
-    glColor3f(1,0,0);
-    for(int i=0; i<=900; i+=n)
-    {
-        glBegin(GL_LINES);
-        glVertex2f(0,i);
-        glVertex2f(20,i);
-        glEnd();
-        glBegin(GL_LINES);
-        glVertex2f(1600,i);
-        glVertex2f(1580,i);
-        glEnd();
-    }
-    for(int i=0; i<=1600; i+=n)
-    {
-        glBegin(GL_LINES);
-        glVertex2f(i,900);
-        glVertex2f(i,880);
-        glEnd();
-        glBegin(GL_LINES);
-        glVertex2f(i,0);
-        glVertex2f(i,20);
-        glEnd();
-    }
-
-}
+// Grph for better understanding
+//void graph(int n)
+//{
+//    //graph
+//    glColor3f(1,0,0);
+//    for(int i=0; i<=900; i+=n)
+//    {
+//        glBegin(GL_LINES);
+//        glVertex2f(0,i);
+//        glVertex2f(20,i);
+//        glEnd();
+//        glBegin(GL_LINES);
+//        glVertex2f(1600,i);
+//        glVertex2f(1580,i);
+//        glEnd();
+//    }
+//    for(int i=0; i<=1600; i+=n)
+//    {
+//        glBegin(GL_LINES);
+//        glVertex2f(i,900);
+//        glVertex2f(i,880);
+//        glEnd();
+//        glBegin(GL_LINES);
+//        glVertex2f(i,0);
+//        glVertex2f(i,20);
+//        glEnd();
+//    }
+//
+//}
 
 void drawBarn()
 {
@@ -1035,8 +1035,8 @@ void drawUFOLight1(int value)
     }
     if (ufoLightHeight<300 && ufoLightFlag==1)
     {
-        ufoLightHeight+=0.1;
-        glutTimerFunc(500, drawUFOLight1, 0);
+        ufoLightHeight++;
+        glutTimerFunc(800, drawUFOLight1, 0);
     }
     else
     {
@@ -1070,7 +1070,7 @@ void abductSheep (int value){
     TargetSheepSize = -(0.0178*TargetSheepy)+6.78;               //goes through (100,5) and (380,0)
     if (TargetSheepSize>0){
         drawAllSheeps();
-        TargetSheepy=TargetSheepy+0.2;
+        TargetSheepy++;
         glutTimerFunc(500, abductSheep, 0);
     }
 }
